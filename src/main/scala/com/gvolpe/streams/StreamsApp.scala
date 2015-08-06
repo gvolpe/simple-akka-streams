@@ -2,7 +2,7 @@ package com.gvolpe.streams
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.gvolpe.streams.flows.SimpleGraph
+import com.gvolpe.streams.flows.CompositeGraph
 
 object StreamsApp extends App {
 
@@ -16,6 +16,7 @@ object StreamsApp extends App {
 //    .runWith(Sink.onComplete (_ => system.shutdown() ))
 
   //ComplexGraph().run()
-  SimpleGraph().run()
+  //SimpleGraph().run()
+  CompositeGraph().run()
 
 }
