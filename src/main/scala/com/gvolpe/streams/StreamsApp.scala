@@ -2,7 +2,10 @@ package com.gvolpe.streams
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.gvolpe.streams.flows.CompositeGraph
+import akka.stream.actor.ActorPublisher
+import akka.stream.scaladsl.{Sink, Source}
+
+import scala.concurrent.forkjoin.ThreadLocalRandom
 
 object StreamsApp extends App {
 
@@ -17,6 +20,19 @@ object StreamsApp extends App {
 
   //ComplexGraph().run()
   //SimpleGraph().run()
-  CompositeGraph().run()
+  //CompositeGraph().run()
+
+//  val source = Source.actorRef[Int](1000, OverflowStrategy.dropBuffer)
+//  val ref = Flow[Int].to(Sink.ignore).runWith(source)
+
+  val numberActor = system.actorOf(NumberActor.props)
+  val pub = ActorPublisher[Int](numberActor)
+
+  Source(pub).runWith(Sink.ignore)
+
+  while(true) {
+    val number = ThreadLocalRandom.current().nextInt(15680)
+    numberActor ! number
+  }
 
 }
