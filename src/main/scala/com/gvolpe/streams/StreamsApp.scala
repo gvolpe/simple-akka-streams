@@ -1,11 +1,12 @@
 package com.gvolpe.streams
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.stream.actor.ActorPublisher
-import akka.stream.scaladsl.{Sink, Source}
-
+import akka.actor.{PoisonPill, ActorSystem}
+import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
+import akka.stream.{ActorMaterializer, OverflowStrategy}
+import com.gvolpe.streams.flows.CompositeGraph
 import scala.concurrent.forkjoin.ThreadLocalRandom
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 object StreamsApp extends App {
 
@@ -20,19 +21,34 @@ object StreamsApp extends App {
 
   //ComplexGraph().run()
   //SimpleGraph().run()
-  //CompositeGraph().run()
+  CompositeGraph().run()
 
 //  val source = Source.actorRef[Int](1000, OverflowStrategy.dropBuffer)
-//  val ref = Flow[Int].to(Sink.ignore).runWith(source)
+//  val (actor, response) = source.via(Flow[Int]).toMat(Sink.foreach(println))(Keep.both).run()
 
-  val numberActor = system.actorOf(NumberActor.props)
-  val pub = ActorPublisher[Int](numberActor)
+  //val ref = Flow[Int].to(Sink.ignore).runWith(source)
 
-  Source(pub).runWith(Sink.ignore)
+//  val numberActor = system.actorOf(NumberActor.props)
+//  val pub = ActorPublisher[Int](numberActor)
+//
+//  Source(pub).runWith(Sink.ignore)
 
-  while(true) {
-    val number = ThreadLocalRandom.current().nextInt(15680)
-    numberActor ! number
-  }
-
+//  def number = ThreadLocalRandom.current().nextInt(15680)
+//
+//  actor ! number
+//  actor ! number
+//  actor ! number
+//  actor ! number
+//
+//  Thread.sleep(1000)
+//
+//  actor ! PoisonPill
+//
+//  response.onComplete {
+//    case Success(_) =>
+//      println("End...")
+//      system.shutdown()
+//    case Failure(e) =>
+//      println(e.getMessage)
+//  }
 }
